@@ -223,6 +223,47 @@ Nombres de capas genéricos y error de encoding UTF-8 en logs.
 
 ---
 
+## 10. Validación de Registros en Shapefiles Descargados de NASA
+
+### Problema
+Los archivos ZIP descargados de NASA pueden contener shapefiles vacíos (0 registros), lo que causa que el procesamiento continúe con datos incompletos sin detección.
+
+### Solución
+Implementada validación automática después de cada descarga:
+
+1. **Función auxiliar `count_shapefile_records()`**:
+   - Busca el archivo .shp dentro del directorio extraído
+   - Cuenta registros usando `arcpy.GetCount_management()`
+   - Retorna el conteo o -1 si hay error
+
+2. **Validación post-descarga**:
+   - Después de extraer cada ZIP de NASA
+   - Si el conteo es 0, se descarga automáticamente desde la URL alterna
+   - Se valida nuevamente y se registra el resultado en el log
+
+**Sensores afectados:**
+- **MODIS**: Valida y usa `url_modis_2` si es necesario
+- **SUOMI-NPP (VNP)**: Valida y usa `url_vnp_2` si es necesario
+- **NOAA-20**: Valida y usa `url_noaa_2` si es necesario
+- **NOAA-21**: Valida pero NO tiene URL alterna (registra warning)
+
+**Ejemplo de log:**
+```
+INFO - Registros encontrados en shapefile: 0
+WARNING - MODIS: Shapefile descargado tiene 0 registros. Intentando con URL alterna...
+INFO - Descargando desde URL alterna: https://firms2.modaps.eosdis.nasa.gov/...
+INFO - MODIS: Registros después de usar URL alterna: 145
+```
+
+**Archivos afectados:**
+- `Fuegos.py` (líneas 89-117: nueva función `count_shapefile_records`)
+- `Fuegos.py` (líneas 181-199: validación MODIS)
+- `Fuegos.py` (líneas 234-252: validación SUOMI-NPP)
+- `Fuegos.py` (líneas 287-305: validación NOAA-20)
+- `Fuegos.py` (líneas 339-343: validación NOAA-21)
+
+---
+
 ## Archivos Nuevos Creados
 
 ### Scripts de Ejecución
@@ -294,14 +335,15 @@ Estas funciones funcionan igual en ArcGIS Desktop y Pro:
 | Categoría | Cantidad |
 |-----------|----------|
 | Archivos migrados | 2 (Fuegos.py, Enviar_Email_Fuegos.py) |
-| Archivos nuevos | 9 |
-| Líneas modificadas | ~40 |
+| Archivos nuevos | 10 (incluye instalar_mysql_connector.bat) |
+| Líneas modificadas | ~70 |
 | Cambios PYTHON_9.3 | 11 |
 | Cambios .encode() | 7 |
 | Cambios codeblock indentación | 3 |
 | Cambios AlterField | 4 |
 | Cambios FieldMappings | 1 |
 | Cambios datetime | 1 |
+| Validación de registros NASA | 4 sensores (MODIS, VNP, NOAA-20, NOAA-21) |
 
 ---
 

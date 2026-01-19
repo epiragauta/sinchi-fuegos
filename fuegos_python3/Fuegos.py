@@ -84,6 +84,42 @@ def group_by_count(table_or_fc, fields):
 ##################################################################
 ##################################################################
 '''
+Contar registros de un shapefile dentro de un directorio
+'''
+def count_shapefile_records(directory):
+    """
+    Busca el primer archivo .shp en un directorio y cuenta sus registros
+
+    Args:
+        directory: Ruta del directorio donde buscar el shapefile
+
+    Returns:
+        int: Número de registros, o -1 si no se encuentra shapefile o hay error
+    """
+    try:
+        # Buscar archivos .shp en el directorio
+        shp_files = glob.glob(os.path.join(directory, "*.shp"))
+
+        if not shp_files:
+            logging.warning("No se encontró archivo .shp en {}".format(directory))
+            return -1
+
+        shp_path = shp_files[0]
+        logging.debug("Shapefile encontrado: {}".format(shp_path))
+
+        # Contar registros
+        count = int(arcpy.GetCount_management(shp_path)[0])
+        logging.info("Registros encontrados en shapefile: {}".format(count))
+
+        return count
+    except Exception as e:
+        logging.error("Error al contar registros del shapefile: {}".format(e))
+        return -1
+
+
+##################################################################
+##################################################################
+'''
 descargar los shps de la nasa
 '''
 def download_nasa_files(data):
@@ -141,6 +177,26 @@ def download_nasa_files(data):
                 f.write(r.content)
             with zipfile.ZipFile(modis_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(current_day_temp_dir)
+
+            # Validar que el shapefile tenga registros
+            record_count = count_shapefile_records(current_day_temp_dir)
+            if record_count == 0:
+                logging.warning("MODIS: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
+                # Usar URL alterna
+                url_modis = url_modis_2
+                logging.info("Descargando desde URL alterna: {}".format(url_modis))
+
+                r = requests.get(url_modis)
+                logging.debug(r.status_code)
+                logging.debug(r.headers['content-type'])
+                with open(modis_zip_path, 'wb') as f:
+                    f.write(r.content)
+                with zipfile.ZipFile(modis_zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(current_day_temp_dir)
+
+                # Validar nuevamente
+                record_count = count_shapefile_records(current_day_temp_dir)
+                logging.info("MODIS: Registros después de usar URL alterna: {}".format(record_count))
         except Exception as e:
             logging.debug('No se puede descargar información para MODIS, {}'.format(e))
 
@@ -174,6 +230,26 @@ def download_nasa_files(data):
                 f.write(r.content)
             with zipfile.ZipFile(vpn_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(current_day_temp_dir)
+
+            # Validar que el shapefile tenga registros
+            record_count = count_shapefile_records(current_day_temp_dir)
+            if record_count == 0:
+                logging.warning("SUOMI-NPP: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
+                # Usar URL alterna
+                url_vnp = url_vnp_2
+                logging.info("Descargando desde URL alterna: {}".format(url_vnp))
+
+                r = requests.get(url_vnp)
+                logging.debug(r.status_code)
+                logging.debug(r.headers['content-type'])
+                with open(vpn_zip_path, 'wb') as f:
+                    f.write(r.content)
+                with zipfile.ZipFile(vpn_zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(current_day_temp_dir)
+
+                # Validar nuevamente
+                record_count = count_shapefile_records(current_day_temp_dir)
+                logging.info("SUOMI-NPP: Registros después de usar URL alterna: {}".format(record_count))
         except Exception as e:
             logging.debug('No se puede descargar información para suomi, {}'.format(e))
 
@@ -207,6 +283,26 @@ def download_nasa_files(data):
                 f.write(r.content)
             with zipfile.ZipFile(noaa_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(current_day_temp_dir)
+
+            # Validar que el shapefile tenga registros
+            record_count = count_shapefile_records(current_day_temp_dir)
+            if record_count == 0:
+                logging.warning("NOAA-20: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
+                # Usar URL alterna
+                url_noaa = url_noaa_2
+                logging.info("Descargando desde URL alterna: {}".format(url_noaa))
+
+                r = requests.get(url_noaa)
+                logging.debug(r.status_code)
+                logging.debug(r.headers['content-type'])
+                with open(noaa_zip_path, 'wb') as f:
+                    f.write(r.content)
+                with zipfile.ZipFile(noaa_zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(current_day_temp_dir)
+
+                # Validar nuevamente
+                record_count = count_shapefile_records(current_day_temp_dir)
+                logging.info("NOAA-20: Registros después de usar URL alterna: {}".format(record_count))
         except Exception as e:
             logging.debug('No se puede descargar información para noaa, {}'.format(e))
 
@@ -239,6 +335,12 @@ def download_nasa_files(data):
                 f.write(r.content)
             with zipfile.ZipFile(noaa21_zip_path, 'r') as zip_ref:
                 zip_ref.extractall(current_day_temp_dir)
+
+            # Validar que el shapefile tenga registros
+            record_count = count_shapefile_records(current_day_temp_dir)
+            if record_count == 0:
+                logging.warning("NOAA-21: Shapefile descargado tiene 0 registros.")
+                logging.info("NOAA-21 no tiene URL alterna configurada. Continuando con archivo vacío.")
         except Exception as e:
             logging.debug('No se puede descargar información para noaa 21, {}'.format(e))
 
