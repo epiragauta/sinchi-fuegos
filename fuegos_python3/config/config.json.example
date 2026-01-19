@@ -1,0 +1,65 @@
+{
+  "_comment": "ESTE ES UN ARCHIVO DE EJEMPLO - Copiar a config.json y configurar con valores reales",
+
+  "temp_dir" : "D:/proceso_ptos_calor_produccion/producccion_archivos_procesados",
+
+  "url_modis" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/shapes/zips/MODIS_C6_1_South_America_24h.zip",
+  "url_vnp" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/shapes/zips/SUOMI_VIIRS_C2_South_America_24h.zip",
+  "url_noaa" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/shapes/zips/J1_VIIRS_C2_South_America_24h.zip",
+
+  "url_modis_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/shapes/zips/MODIS_C6_1_South_America_24h.zip",
+  "url_vnp_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/shapes/zips/SUOMI_VIIRS_C2_South_America_24h.zip",
+  "url_noaa_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/shapes/zips/J1_VIIRS_C2_South_America_24h.zip",
+  "url_noaa_21" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-21-viirs-c2/shapes/zips/J2_VIIRS_C2_South_America_24h.zip",
+
+  "max_retries" : 5,
+  "delay_seconds" : 6,
+  "admin_emails" : ["admin@ejemplo.com"],
+  "gmail_user" : "correo@gmail.com",
+  "gmail_password" : "contraseña_aplicacion_gmail_16_caracteres",
+  "email_batch_size" : "40",
+
+  "layer_hidrocarburos" : "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_pozos",
+  "layer_dlim" : "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_limite",
+  "layer_union_ent_ref" : "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_union_entidades",
+
+  "layer_usuarios_emails" : "\\schema.dataset.featureclass\\schema.dataset.nombre_tabla_usuarios",
+
+  "layer_output_prod" : "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_salida_prod",
+  "layer_output_pub" :  "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_salida_pub_wm",
+  "layer_output_pub_sirgas" :  "\\schema.dataset.featureclass\\schema.dataset.nombre_capa_salida_pub_sirgas",
+
+  "prod_database_name" :  "nombre_bd_produccion",
+  "pub_database_name" :  "nombre_bd_publicacion",
+
+  "user_reader" : "usuario_lectura",
+  "user_reader_pwd" : "password_lectura",
+  "prod_instance" :  "servidor_ip,5432",
+
+
+  "pub_user_reader" : "usuario_lectura_pub",
+  "pub_user_reader_pwd" : "password_lectura_pub",
+  "pub_instance" :  "servidor_ip,5432",
+
+  "prod_user_edit" :  "usuario_escritura_prod",
+  "prod_user_edit_pwd" :  "password_escritura_prod",
+  "prod_edit_instance" :  "servidor_ip,5432",
+
+  "pub_user_edit" :  "usuario_escritura_pub",
+  "pub_user_edit_pwd" :  "password_escritura_pub",
+  "pub_edit_instance" :  "servidor_ip,5432",
+
+  "mysql_table_name": "nombre_tabla_usuarios",
+
+  "mysql_user": "usuario_mysql",
+  "mysql_password": "password_mysql",
+  "mysql_host": "servidor_mysql_ip",
+  "mysql_database": "nombre_bd_mysql",
+  "mysql_ssl_ca": "D:\\ruta\\a\\certificados\\ca.pem",
+  "mysql_ssl_cert": "D:\\ruta\\a\\certificados\\server-cert.pem",
+  "mysql_ssl_key": "D:\\ruta\\a\\certificados\\server-key.pem",
+
+  "is_test": false,
+  "local_gdb": "C:\\temp\\test_data\\fuegos_test.gdb"
+
+}

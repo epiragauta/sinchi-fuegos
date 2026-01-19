@@ -1,0 +1,46 @@
+# Archivos de configuración con credenciales
+config/config.json
+
+# Logs
+*.log
+logs/
+
+# Conexiones SDE temporales
+temp_connections/
+*.sde
+
+# Geodatabases de prueba
+*.gdb/
+*.gdb
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Archivos temporales de ArcGIS
+*.lock
+*.aprx.lock
+
+# Archivos descargados de NASA
+*.zip
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+
+# Certificados SSL
+*.pem
+*.crt
+*.key
+
+# Archivos de respaldo
+*.bak
+*~
+
+# Directorio temporal
+temp/
+tmp/
