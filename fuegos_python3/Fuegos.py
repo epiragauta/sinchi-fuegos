@@ -180,6 +180,8 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
+            logging.info("MODIS: Registros antes de usar URL alterna: {}".format(record_count))
+            
             if record_count == 0:
                 logging.warning("MODIS: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
                 # Usar URL alterna
@@ -233,6 +235,7 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
+            logging.info("SUOMI-NPP: Registros antes de usar URL alterna: {}".format(record_count))
             if record_count == 0:
                 logging.warning("SUOMI-NPP: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
                 # Usar URL alterna
@@ -286,6 +289,7 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
+            logging.info("NOAA-20: Registros antes de usar URL alterna: {}".format(record_count))
             if record_count == 0:
                 logging.warning("NOAA-20: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
                 # Usar URL alterna
@@ -338,6 +342,7 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
+            logging.info("NOAA-21: Registros antes de usar URL alterna: {}".format(record_count))
             if record_count == 0:
                 logging.warning("NOAA-21: Shapefile descargado tiene 0 registros.")
                 logging.info("NOAA-21 no tiene URL alterna configurada. Continuando con archivo vacío.")
@@ -791,7 +796,7 @@ def process_data(data):
         # AVera - 20231211, Se crea un condicional por cada shp de cada sensor para que si este existe lo tenga analisis para el resto del anlisis
         # ADiaz - 20240301 Se altera la longitud del campo satellite para poder manejar nombres largos de las siglas del satelite que asigna la NASA
 
-        if arcpy.Exists(shp_modis):
+        if shp_modis and arcpy.Exists(shp_modis):
             arcpy.Select_analysis(shp_modis, "shp_modis_1")
             # Ajuste campo satellite
             arcpy.AlterField_management(shp_modis_1, "SATELLITE", "SATELLITEOLD")
@@ -825,7 +830,7 @@ def process_data(data):
                                             codeblock)
             merge_list.append(shp_modis_1)
 
-        if arcpy.Exists(shp_vnp):
+        if shp_vnp and arcpy.Exists(shp_vnp):
             arcpy.Select_analysis(shp_vnp, "shp_vnp_1")
             # Ajuste campo satellite
             arcpy.AlterField_management(shp_vnp_1, "SATELLITE", "SATELLITEOLD")
@@ -842,7 +847,7 @@ def process_data(data):
             arcpy.AddField_management(shp_vnp_1, "confidence_modis", "Double")
             merge_list.append(shp_vnp_1)
 
-        if arcpy.Exists(shp_nooa):
+        if shp_nooa and arcpy.Exists(shp_nooa):
             arcpy.Select_analysis(shp_nooa, "shp_nooa_1")
             # Ajuste campo satellite
             arcpy.AlterField_management(shp_nooa_1, "SATELLITE", "SATELLITEOLD")
@@ -860,7 +865,7 @@ def process_data(data):
             arcpy.AddField_management(shp_nooa_1, "confidence_modis", "Double")
             merge_list.append(shp_nooa_1)
 
-        if arcpy.Exists(shp_nooa_21):
+        if shp_nooa_21 and arcpy.Exists(shp_nooa_21):
             arcpy.Select_analysis(shp_nooa_21, "shp_nooa_21_1")
             # Ajuste campo satellite
             arcpy.AlterField_management(shp_nooa_21_1, "SATELLITE", "SATELLITEOLD")
