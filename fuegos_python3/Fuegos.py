@@ -180,8 +180,7 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
-            logging.info("MODIS: Registros antes de usar URL alterna: {}".format(record_count))
-            
+            logging
             if record_count == 0:
                 logging.warning("MODIS: Shapefile descargado tiene 0 registros. Intentando con URL alterna...")
                 # Usar URL alterna
@@ -342,7 +341,7 @@ def download_nasa_files(data):
 
             # Validar que el shapefile tenga registros
             record_count = count_shapefile_records(current_day_temp_dir)
-            logging.info("NOAA-21: Registros antes de usar URL alterna: {}".format(record_count))
+            logging.info("NOAA-21: Registros descargados: {}".format(record_count))
             if record_count == 0:
                 logging.warning("NOAA-21: Shapefile descargado tiene 0 registros.")
                 logging.info("NOAA-21 no tiene URL alterna configurada. Continuando con archivo vacío.")
@@ -1125,6 +1124,8 @@ def process_data(data):
 
         edit_conn = data['edit_conn_prod_instance']
         table_name = 'e2_modfun.CFgoHis_Car_Mun_Dep_Elt_Pai'
+        if data["is_qa"]:
+            table_name = 'e2_modfun.CFgoHis_Car_Mun_Dep_Elt_Pai_TEST'
 
         duplicated_lyr = 'duplicated_lyr'
         feature_output_prod = data['feature_output_prod']

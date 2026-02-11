@@ -70,7 +70,16 @@ def group_by_count(table_or_fc, fields):
         for row in curs:
             # no need to store as a tuple if only 1 field, just store the value
             if len(row) == 1:
-                row = row[0]
+                value = row[0] 
+                if value is None:
+                    value = "Sin Información"
+                row = value
+            else:
+                if row[0] is None:
+                    temp_list = list(row)
+                    temp_list[0] = "Sin Información"
+                    row = tuple(temp_list)
+
             counter[row] += 1
     return counter
 
@@ -447,35 +456,41 @@ def send_notifications(data):
 
         message += table_html_cuencas.format(style_th, style_th, style_th, style_th, rows_cuencas) + "<br/>"
 
-        table_cndf = ''' 
-                    <h3>Reporte por núcleos de desarrollo forestal y de la biodiversidad</h3>    
-                    <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
-                    <tr>
-                        <th {}>Núcleos de desarrollo forestal</th>
-                        <th {}>Cantidad</th>        
-                    </tr>
-                    {}
-                    </table>
-                    <p><b>Núcleo de Desarrollo Forestal y de la Biodiversidad NDFyB</b>: Es una área identificada por el Sistema de Monitoreo de Bosques y Carbono SMByC 
-                    como Núcleo Activo de Deforestación NAD, que además cuenta con una oferta natural de superficie de bosque y que ha sido priorizada por 
-                    el Ministerio de Ambiente y Desarrollo Sostenible para que las comunidades locales, con sus saberes y con el acompañamiento del Estado, 
-                    implementen acciones de manejo sostenible de los bosques y de la biodiversidad, generando transformación social, económica y ambiental del territorio. 
-                    (Fuente. Resolución 057 de 2025. Ministerio del Medio Ambiente. Art. 2 Definiciones)</p>    
-                    '''
-        rows_cndf = ''
-        for nucleo in ordered_nucleos:
-            if not nucleo is None:
-                logging.debug("Este es nucleo: " + str(nucleo))
-                logging.debug("Este es conteo_nucleo: " + str(conteo_nucleos[nucleo]))
-                row = '''
+        descripcion_ndf = '''
+                        <p><b>Núcleo de Desarrollo Forestal y de la Biodiversidad NDFyB</b>: Es una área identificada por el Sistema de Monitoreo de Bosques y Carbono SMByC 
+                        como Núcleo Activo de Deforestación NAD, que además cuenta con una oferta natural de superficie de bosque y que ha sido priorizada por 
+                        el Ministerio de Ambiente y Desarrollo Sostenible para que las comunidades locales, con sus saberes y con el acompañamiento del Estado, 
+                        implementen acciones de manejo sostenible de los bosques y de la biodiversidad, generando transformación social, económica y ambiental del territorio. 
+                        (Fuente. Resolución 057 de 2025. Ministerio del Medio Ambiente. Art. 2 Definiciones)</p>    
+                        '''
+        if len(ordered_nucleos) > 0:
+            table_cndf = ''' 
+                        <h3>Reporte por núcleos de desarrollo forestal y de la biodiversidad</h3>    
+                        <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
                         <tr>
-                            <td {} >{}</td>
-                            <td {}>{}</td>
+                            <th {}>Núcleos de desarrollo forestal</th>
+                            <th {}>Cantidad</th>        
                         </tr>
-                        '''.format(style_td, nucleo, style_td, conteo_nucleos[nucleo])
-                rows_cndf += row
+                        {}
+                        </table>                        
+                        ''' + descripcion_ndf
+            rows_cndf = ''
+            for nucleo in ordered_nucleos:
+                if not nucleo is None:
+                    logging.debug("Este es nucleo: " + str(nucleo))
+                    logging.debug("Este es conteo_nucleo: " + str(conteo_nucleos[nucleo]))
+                    row = '''
+                            <tr>
+                                <td {} >{}</td>
+                                <td {}>{}</td>
+                            </tr>
+                            '''.format(style_td, nucleo, style_td, conteo_nucleos[nucleo])
+                    rows_cndf += row
 
-        message += table_cndf.format(style_th, style_th, rows_cndf) + "<br/>"
+            message += table_cndf.format(style_th, style_th, rows_cndf) + "<br/>"
+        else:
+            message += "<p>Ningún evento de incendios se encuentra localizado dentro de un núcleo de desarrollo forestal. </p>" + descripcion_ndf;
+
 
         informative_note = '''
                         <p>
@@ -535,8 +550,10 @@ def send_notifications(data):
 
         n = int(email_batch_size)
         recipients_by_chunks = [recipients[i * n:(i + 1) * n] for i in range((len(recipients) + n - 1) // n)]
-        if data["is_test"]:
-            recipients_by_chunks = [["edwin.piragauta@skaphe.com"]]
+        #if data["is_test"]:
+        recipients_by_chunks = [["edwin.piragauta@skaphe.com", "cramirezo@sinchi.org.co", "jarias@sinchi.org.co"]]
+        
+
         #recipients_by_chunks = [["edwin.piragauta@skaphe.com"]] #
         logging.debug("recipients_by_chunks : {} ".format(recipients_by_chunks))
 
@@ -551,7 +568,7 @@ def send_notifications(data):
                                   )
 
             # logging.debug( body )
-            subject = "SIATAC - Resumen diario de puntos de calor en la Amazonia colombiana. Fecha: {} .".format(
+            subject = "(Beta Py3) :: SIATAC - Resumen diario de puntos de calor en la Amazonia colombiana. Fecha: {} .".format(
                 time.strftime("%Y/%m/%d - %H:%M"))
             logging.debug("recipients : {} ".format(recipients))
             try:
