@@ -1,0 +1,62 @@
+{
+  "temp_dir" : "D:/proceso_ptos_calor_produccion/producccion_archivos_procesados",
+  
+  "url_modis" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/shapes/zips/MODIS_C6_1_South_America_24h.zip",
+  "url_vnp" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/shapes/zips/SUOMI_VIIRS_C2_South_America_24h.zip",
+  "url_noaa" : "https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/shapes/zips/J1_VIIRS_C2_South_America_24h.zip",
+
+  "url_modis_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/shapes/zips/MODIS_C6_1_South_America_24h.zip",
+  "url_vnp_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/shapes/zips/SUOMI_VIIRS_C2_South_America_24h.zip",
+  "url_noaa_2" : "https://firms2.modaps.eosdis.nasa.gov/data/active_fire/noaa-20-viirs-c2/shapes/zips/J1_VIIRS_C2_South_America_24h.zip",
+
+  "max_retries" : 5,
+  "delay_seconds" : 6,
+  "admin_emails" : ["adiaz@sinchi.org.co"],
+  "gmail_user" : "siatac@sinchi.org.co",
+  "gmail_password" : "jpum ibmp ypgw tfnn",
+  "email_batch_size" : "40",
+
+  "layer_hidrocarburos" : "\\labsigysr_corp.e1b_geodata_co.ANH\\labsigysr_corp.e1b_geodata_co.CPzp2010",
+  "layer_dlim" : "\\labsigysr_corp.e2_modfun.MonAmbUER\\labsigysr_corp.e2_modfun.DLim2014",
+  "layer_union_ent_ref" : "\\labsigysr_corp.e2_modfun.MonAmbUER\\labsigysr_corp.e2_modfun.CPai2014_CCar2014_CDep2014_CMun2014_CElt2019", 
+  
+  "layer_usuarios_emails" : "\\labsigysr_pub.e1b_geodata_co_pub.Usuarios_Siatac",
+
+  "layer_output_prod" : "\\labsigysr_corp.e2_modfun.MonAmbTemasHis\\labsigysr_corp.e2_modfun.CFgoHis_Car_Mun_Dep_Elt_Pai", 
+  "layer_output_pub" :  "\\labsigysr_pub.e2_modfun_pub.MonAmbTemasHis_WM\\labsigysr_pub.e2_modfun_pub.CFgoHis_Car_Mun_Dep_Elt_Pai_WM",   
+  "layer_output_pub_sirgas" :  "\\labsigysr_pub.e2_modfun_pub.MonAmbTemasHis\\labsigysr_pub.e2_modfun_pub.CFgoHis_Car_Mun_Dep_Elt_Pai",
+  
+  "prod_database_name" :  "labsigysr_corp",
+  "pub_database_name" :  "labsigysr_pub",
+
+  "user_reader" : "sde", 
+  "user_reader_pwd" : "@Fb7ma3FEn",
+  "prod_instance" :  "192.168.10.14,5432", 
+ 
+  
+  "pub_user_reader" : "e1b_geodata_co_pub", 
+  "pub_user_reader_pwd" : "*H5CwePUQMr^",
+  "pub_instance" :  "192.168.10.14,5432", 
+  
+  "prod_user_edit" :  "e2_modfun",
+  "prod_user_edit_pwd" :  "qqB!!BVZSgbv",
+  "prod_edit_instance" :  "192.168.10.14,5432", 
+  
+  "pub_user_edit" :  "e2_modfun_pub",
+  "pub_user_edit_pwd" :  "ymbnmbxxX&5*",
+  "pub_edit_instance" :  "192.168.10.14,5432", 
+
+  "mysql_table_name": "st_newsletter", 
+
+  "mysql_user": "consulta_user_siatac",
+  "mysql_password": "2e9stt$Hk^Ie",
+  "mysql_host": "52.254.9.145",
+  "mysql_database": "siatac_wp",
+  "mysql_ssl_ca": "D:\\proceso_ptos_calor_produccion\\produccion_despliegue\\ca.pem",
+  "mysql_ssl_cert": "D:\\proceso_ptos_calor_produccion\\produccion_despliegue\\server-cert.pem",
+  "mysql_ssl_key": "D:\\proceso_ptos_calor_produccion\\produccion_despliegue\\server-key.pem",
+  "is_test": true,
+  "local_gdb": "C:\\temp\\test_data\\fuegos_test.gdb"
+
+}
+
