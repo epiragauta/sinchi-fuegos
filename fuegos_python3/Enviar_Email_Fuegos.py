@@ -70,7 +70,7 @@ def group_by_count(table_or_fc, fields):
         for row in curs:
             # no need to store as a tuple if only 1 field, just store the value
             if len(row) == 1:
-                value = row[0] 
+                value = row[0]
                 if value is None:
                     value = "Sin Información"
                 row = value
@@ -82,6 +82,30 @@ def group_by_count(table_or_fc, fields):
 
             counter[row] += 1
     return counter
+
+
+##################################################################
+##################################################################
+'''
+Generar mensaje HTML cuando no hay datos
+'''
+
+
+def generate_no_data_message(title, description=""):
+    """
+    Generate HTML section when no data is available.
+
+    Args:
+        title: Section title (H3 heading)
+        description: Optional detailed description (HTML)
+
+    Returns:
+        str: HTML string for the no-data section
+    """
+    html = '<h3>{}</h3>\n<p>Para el reporte de hoy, no se detectaron datos disponibles.</p>\n'.format(title)
+    if description:
+        html += description
+    return html
 
 
 ##################################################################
@@ -325,69 +349,58 @@ def send_notifications(data):
 		</p>		
         '''
 
-        table = ''' 
-            <h3>Reporte por departamento y municipio </h3>
-            <table style="width:30%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
-            <tr>
-                <th  style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
-                Departamento</th>
-                <th  style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
-                Cantidad</th>
-                <th  style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
-                Municipio*</th>
-                <th  style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
-                Cantidad</th>
-            </tr>
-            {}
-            </table>
-			<div>
-			<font size = "0">*En la tabla se presenta el municipio que tuvo la mayor cantidad de puntos de calor reportados en el departamento. </font>
-			</div>
-			'''
-
         ordered_depto = collections.OrderedDict(sorted(conteo_depto.items()))
         # logging.debug( ' ordered_depto: {} '.format(ordered_depto )  )
 
         ordered_muni = collections.OrderedDict(sorted(conteo_muni.items()))
         # logging.debug( ' ordered_muni: {} '.format(ordered_muni )  )
 
-        rows_car = ''
-        for depto in ordered_depto:
-            municipio_max_name = ""
-            municipio_max_total = 0
+        # Validar si hay datos antes de generar tabla
+        if len(ordered_depto) > 0:
+            table = '''
+                <h3>Reporte por departamento y municipio</h3>
+                <table style="width:30%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc;">
+                <tr>
+                    <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                    Departamento</th>
+                    <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                    Cantidad</th>
+                    <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                    Municipio*</th>
+                    <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                    Cantidad</th>
+                </tr>
+                {}
+                </table>
+                <div>
+                <font size="0">*En la tabla se presenta el municipio que tuvo la mayor cantidad de puntos de calor reportados en el departamento.</font>
+                </div>
+                '''
 
-            for muni in ordered_muni:
-                if muni[0] == depto:
-                    if conteo_muni[muni] > municipio_max_total:
-                        municipio_max_name = muni[1]
-                        municipio_max_total = conteo_muni[muni]
+            rows_car = ''
+            for depto in ordered_depto:
+                municipio_max_name = ""
+                municipio_max_total = 0
 
-            row = '''
-            <tr>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
-            </tr>
-            '''.format(depto, conteo_depto[depto],
-                       municipio_max_name, municipio_max_total)
-            rows_car += row
+                for muni in ordered_muni:
+                    if muni[0] == depto:
+                        if conteo_muni[muni] > municipio_max_total:
+                            municipio_max_name = muni[1]
+                            municipio_max_total = conteo_muni[muni]
 
-        message += table.format(rows_car) + "<br/><br/>"
+                row = '''
+                <tr>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                </tr>
+                '''.format(depto, conteo_depto[depto], municipio_max_name, municipio_max_total)
+                rows_car += row
 
-        table = '''
-			<h3>Reporte por Corporación Autónoma Regional y de Desarrollo Sostenible</h3>
-            <table style="width:30%; padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
-            <tr>
-            <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;" >
-            Corporación</th>
-            <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;" >
-            Cantidad</th>
-            </tr>
-            {}
-            </table>            
-
-            '''
+            message += table.format(rows_car) + "<br/><br/>"
+        else:
+            message += generate_no_data_message("Reporte por departamento y municipio") + "<br/><br/>"
 
         ordered_car = collections.OrderedDict(sorted(conteo_car.items()))
 
@@ -398,81 +411,111 @@ def send_notifications(data):
         ordered_nucleos = collections.OrderedDict(sorted(conteo_nucleos.items()))
         # logging.debug( ' ordered_car: {} '.format(ordered_car )  )
 
-        rows_car = ''
-        for car in ordered_car:
-            row = '''
-            <tr>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;" >{}</td>
-                <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
-            </tr>
-            '''.format(car, conteo_car[car])
-            rows_car += row
+        # Validar si hay datos antes de generar tabla
+        if len(ordered_car) > 0:
+            table = '''
+                <h3>Reporte por Corporación Autónoma Regional y de Desarrollo Sostenible</h3>
+                <table style="width:30%; padding: 8px; border-collapse: collapse;border: 1px solid #cccccc;">
+                <tr>
+                <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                Corporación</th>
+                <th style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;">
+                Cantidad</th>
+                </tr>
+                {}
+                </table>
+                '''
 
-        message += table.format(rows_car) + "<br/>"
+            rows_car = ''
+            for car in ordered_car:
+                row = '''
+                <tr>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                    <td style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;">{}</td>
+                </tr>
+                '''.format(car, conteo_car[car])
+                rows_car += row
+
+            message += table.format(rows_car) + "<br/>"
+        else:
+            message += generate_no_data_message("Reporte por Corporación Autónoma Regional y de Desarrollo Sostenible") + "<br/>"
 
         style_th = 'style="border: 1px solid #cccccc;font-weight: bold; text-align: center; padding-top: 1px;  padding-bottom: 1px; background-color: #BF6830;"'
         style_td = 'style="border: 1px solid #cccccc; border-collapse: collapse; padding: 1px;"'
-        table_html_cuencas = ''' 
-            <h3>Reporte por cuencas hidrográficas</h3>    
-            <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
-            <tr>
-                <th {}>Cuenca hidrográfica</th>
-                <th {}>Cantidad</th>        
-                <th {}>Subcuenca hidrográfica</th>
-                <th {}>Cantidad</th>
-            </tr>
-            {}
-            </table>    
-            <p><b>Cuenca Hidrográfica</b>: Entiéndase por cuenca u hoya hidrográfica el área de aguas superficiales o subterráneas, que vierten a una red natural con 
-            uno o varios cauces naturales, de caudal continuo o intermitente, que confluyen en un curso mayor que, a su vez, puede desembocar en un río principal, 
-            en un depósito natural de aguas, en un pantano o directamente en el mar. (Fuente. Decreto 1729 de 2002, Art 1) la tabla muestra las cuencas determinadas 
-            por el IDEAM como zonas hidrográficas subzonas hidrográficas o cuencas de tercer orden </p>
-            <p><font size = "0">*En la tabla se presenta la subcuenca  que tuvo la mayor cantidad de puntos de calor reportados en la cuenca. </font></p>            
+
+        # Definición de descripción común
+        descripcion_cuencas = '''
+            <p><b>Cuenca Hidrográfica</b>: Entiéndase por cuenca u hoya hidrográfica el área de aguas superficiales o subterráneas, que vierten a una red natural con
+            uno o varios cauces naturales, de caudal continuo o intermitente, que confluyen en un curso mayor que, a su vez, puede desembocar en un río principal,
+            en un depósito natural de aguas, en un pantano o directamente en el mar. (Fuente. Decreto 1729 de 2002, Art 1) la tabla muestra las cuencas determinadas
+            por el IDEAM como zonas hidrográficas subzonas hidrográficas o cuencas de tercer orden.</p>
             '''
-        rows_cuencas = ''
-        for cuenca in ordered_cuencas:
-            subszh_max_name = ""
-            subszh_max_total = 0
 
-            for subszh in ordered_subcuencas:
-                if subszh[0] == cuenca:
-                    if conteo_subcuencas[subszh] > subszh_max_total:
-                        subszh_max_name = subszh[1]
-                        subszh_max_total = conteo_subcuencas[subszh]
+        # Validar si hay datos antes de generar tabla
+        if len(ordered_cuencas) > 0:
+            table_html_cuencas = '''
+                <h3>Reporte por cuencas hidrográficas</h3>
+                <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc;">
+                <tr>
+                    <th {}>Cuenca hidrográfica</th>
+                    <th {}>Cantidad</th>
+                    <th {}>Subcuenca hidrográfica</th>
+                    <th {}>Cantidad</th>
+                </tr>
+                {}
+                </table>
+                ''' + descripcion_cuencas + '''
+                <p><font size="0">*En la tabla se presenta la subcuenca que tuvo la mayor cantidad de puntos de calor reportados en la cuenca.</font></p>
+                '''
 
-            row = '''
-            <tr>
-                <td {}>{}</td>
-                <td {}>{}</td>
-                <td {}>{}</td>
-                <td {}>{}</td>
-            </tr>
-            '''.format(style_td, cuenca,
-                       style_td, conteo_cuencas[cuenca],
-                       style_td, subszh_max_name,
-                       style_td, subszh_max_total)
+            rows_cuencas = ''
+            for cuenca in ordered_cuencas:
+                subszh_max_name = ""
+                subszh_max_total = 0
 
-            rows_cuencas += row
+                for subszh in ordered_subcuencas:
+                    if subszh[0] == cuenca:
+                        if conteo_subcuencas[subszh] > subszh_max_total:
+                            subszh_max_name = subszh[1]
+                            subszh_max_total = conteo_subcuencas[subszh]
 
-        message += table_html_cuencas.format(style_th, style_th, style_th, style_th, rows_cuencas) + "<br/>"
+                row = '''
+                <tr>
+                    <td {}>{}</td>
+                    <td {}>{}</td>
+                    <td {}>{}</td>
+                    <td {}>{}</td>
+                </tr>
+                '''.format(style_td, cuenca,
+                           style_td, conteo_cuencas[cuenca],
+                           style_td, subszh_max_name,
+                           style_td, subszh_max_total)
 
+                rows_cuencas += row
+
+            message += table_html_cuencas.format(style_th, style_th, style_th, style_th, rows_cuencas) + "<br/>"
+        else:
+            message += generate_no_data_message("Reporte por cuencas hidrográficas", descripcion_cuencas) + "<br/>"
+
+        # Definir descripción común fuera del condicional
         descripcion_ndf = '''
-                        <p><b>Núcleo de Desarrollo Forestal y de la Biodiversidad NDFyB</b>: Es una área identificada por el Sistema de Monitoreo de Bosques y Carbono SMByC 
-                        como Núcleo Activo de Deforestación NAD, que además cuenta con una oferta natural de superficie de bosque y que ha sido priorizada por 
-                        el Ministerio de Ambiente y Desarrollo Sostenible para que las comunidades locales, con sus saberes y con el acompañamiento del Estado, 
-                        implementen acciones de manejo sostenible de los bosques y de la biodiversidad, generando transformación social, económica y ambiental del territorio. 
-                        (Fuente. Resolución 057 de 2025. Ministerio del Medio Ambiente. Art. 2 Definiciones)</p>    
+                        <p><b>Núcleo de Desarrollo Forestal y de la Biodiversidad NDFyB</b>: Es una área identificada por el Sistema de Monitoreo de Bosques y Carbono SMByC
+                        como Núcleo Activo de Deforestación NAD, que además cuenta con una oferta natural de superficie de bosque y que ha sido priorizada por
+                        el Ministerio de Ambiente y Desarrollo Sostenible para que las comunidades locales, con sus saberes y con el acompañamiento del Estado,
+                        implementen acciones de manejo sostenible de los bosques y de la biodiversidad, generando transformación social, económica y ambiental del territorio.
+                        (Fuente. Resolución 057 de 2025. Ministerio del Medio Ambiente. Art. 2 Definiciones)</p>
                         '''
+
         if len(ordered_nucleos) > 0:
-            table_cndf = ''' 
-                        <h3>Reporte por núcleos de desarrollo forestal y de la biodiversidad</h3>    
-                        <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc; ">
+            table_cndf = '''
+                        <h3>Reporte por núcleos de desarrollo forestal y de la biodiversidad</h3>
+                        <table style="width:50%;padding: 8px; border-collapse: collapse;border: 1px solid #cccccc;">
                         <tr>
                             <th {}>Núcleos de desarrollo forestal</th>
-                            <th {}>Cantidad</th>        
+                            <th {}>Cantidad</th>
                         </tr>
                         {}
-                        </table>                        
+                        </table>
                         ''' + descripcion_ndf
             rows_cndf = ''
             for nucleo in ordered_nucleos:
@@ -489,7 +532,10 @@ def send_notifications(data):
 
             message += table_cndf.format(style_th, style_th, rows_cndf) + "<br/>"
         else:
-            message += "<p>Ningún evento de incendios se encuentra localizado dentro de un núcleo de desarrollo forestal. </p>" + descripcion_ndf;
+            message += generate_no_data_message(
+                "Reporte por núcleos de desarrollo forestal y de la biodiversidad",
+                descripcion_ndf
+            ) + "<br/>"
 
 
         informative_note = '''
