@@ -44,3 +44,6 @@ __pycache__/
 # Directorio temporal
 temp/
 tmp/
+
+# Claude Code
+.claude/
